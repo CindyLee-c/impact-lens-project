@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Impact-Lens</title>
+  <style>
+    body {
+      width: 400px;
+      min-height: 600px;
+      margin: 0;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      line-height: 1.4;
+      background: #f8f9fa;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #e1e5e9;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 18px;
+      color: #1a73e8;
+    }
+
+    .usage {
+      font-size: 12px;
+      color: #666;
+      background: white;
+      padding: 4px 8px;
+      border-radius: 12px;
+      border: 1px solid #e1e5e9;
+    }
+
+    .analyze-btn {
+      width: 100%;
+      padding: 12px;
+      background: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 16px;
+      transition: background 0.2s;
+    }
+
+    .analyze-btn:hover {
+      background: #1557b0;
+    }
+
+    .analyze-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #1a73e8;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 10px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .section {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      border: 1px solid #e1e5e9;
+    }
+
+    .section-title {
+      font-weight: 600;
+      font-size: 16px;
+      margin-bottom: 12px;
+      color: #202124;
+    }
+
+    .claim {
+      background: #e8f0fe;
+      padding: 12px;
+      border-radius: 6px;
+      border-left: 4px solid #1a73e8;
+      margin-bottom: 8px;
+    }
+
+    .questions {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .question-item {
+      background: #fff3e0;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      border-left: 4px solid #ff9800;
+      overflow: hidden;
+    }
+
+    .accordion-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.2s;
+    }
+
+    .accordion-header:hover {
+      background: rgba(255, 152, 0, 0.1);
+    }
+
+    .question-text {
+      color: #e65100;
+      font-weight: 500;
+      flex: 1;
+    }
+
+    .accordion-arrow {
+      color: #ff9800;
+      font-size: 12px;
+      font-weight: bold;
+      margin-left: 8px;
+      transition: transform 0.2s;
+    }
+
+    .accordion-content {
+      display: none;
+      border-top: 1px solid #ffcc80;
+    }
+
+    .answer-part {
+      background: #f5f5f5;
+      padding: 12px;
+      color: #2e7d32;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .impact-points {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .impact-points li {
+      background: #e8f5e8;
+      padding: 10px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      border-left: 4px solid #4caf50;
+    }
+
+    .sources {
+      font-size: 12px;
+      color: #666;
+      margin-top: 8px;
+    }
+
+    .sources a {
+      color: #1a73e8;
+      text-decoration: none;
+    }
+
+    .error {
+      background: #fce8e6;
+      color: #d93025;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #f28b82;
+    }
+
+    .no-content {
+      text-align: center;
+      color: #666;
+      padding: 40px 20px;
+    }
+
+    .language-selector {
+      display: flex;
+      gap: 4px;
+    }
+
+    .lang-flag {
+      background: none;
+      border: 2px solid transparent;
+      border-radius: 4px;
+      padding: 4px 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.2s;
+      opacity: 0.6;
+    }
+
+    .lang-flag:hover {
+      opacity: 0.8;
+      border-color: #e1e5e9;
+    }
+
+    .lang-flag.active {
+      opacity: 1;
+      border-color: #1a73e8;
+      background: rgba(26, 115, 232, 0.1);
+    }
+
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">Impact-Lens</div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <div class="language-selector">
+        <button class="lang-flag" data-lang="nl" title="Nederlands">🇳🇱</button>
+        <button class="lang-flag" data-lang="en" title="English">🇺🇸</button>
+        <button class="lang-flag" data-lang="de" title="Deutsch">🇩🇪</button>
+        <button class="lang-flag" data-lang="es" title="Español">🇪🇸</button>
+      </div>
+      <div class="usage" id="usage">0/5 gebruikt</div>
+    </div>
+  </div>
+
+  <div id="subscriptionPanel" style="display: none; background: #f0f8ff; padding: 12px; margin-bottom: 16px; border-radius: 8px; border: 1px solid #1a73e8;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <div id="unlimitedAccountTitle" style="font-weight: 600; color: #1a73e8;">Premium Account</div>
+        <div id="unlimitedAnalysesTitle" style="font-size: 12px; color: #666;">Onbeperkte analyses</div>
+      </div>
+      <button id="manageBtn" style="
+        background: transparent;
+        border: 1px solid #1a73e8;
+        color: #1a73e8;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        cursor: pointer;
+      ">Beheren</button>
+    </div>
+  </div>
+
+  <button class="analyze-btn" id="analyzeBtn">Analyseer artikel</button>
+
+  <div id="loading" class="loading" style="display: none;">
+    <div class="spinner"></div>
+    <div id="loadingText">Analyseren...</div>
+  </div>
+
+  <div id="results" style="display: none;">
+    <div class="section">
+      <div class="section-title" id="mainClaimTitle">Hoofdclaim</div>
+      <div class="claim" id="claim"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title" id="impactSummaryTitle">Impact samenvatting</div>
+      <ul class="impact-points" id="impactPoints"></ul>
+      <div class="sources" id="sources"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title" id="criticalQuestionsTitle">Kritische vragen</div>
+      <ul class="questions" id="questions"></ul>
+    </div>
+  </div>
+
+  <div id="error" class="error" style="display: none;"></div>
+
+  <div id="noContent" class="no-content">
+    <p id="noContentText">Ga naar een nieuwsartikel om te beginnen met analyseren.</p>
+  </div>
+
+  <script src="ExtPay.js"></script>
+  <script src="sidebar.js"></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Extension API</title>
+</head>
+<body>
+    <h1>Test Chrome Extension API</h1>
+    <button onclick="testAPI()">Test API Call</button>
+    <div id="result"></div>
+
+    <script>
+    async function testAPI() {
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = 'Testing...';
+
+        try {
+            const response = await fetch('https://impact-lens-api-602723277830.europe-west1.run.app/analyze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    url: 'https://example.com',
+                    title: 'Test Artikel',
+                    text: 'Dit is een test artikel met meer dan vijftig woorden. Het gaat over een belangrijk onderwerp dat veel mensen raakt. De regering heeft nieuwe plannen gemaakt. Experts zijn het niet eens over de gevolgen. Mensen maken zich zorgen over de toekomst van hun kinderen.'
+                })
+            });
+
+            resultDiv.innerHTML = `
+                <p>Status: ${response.status}</p>
+                <p>Status Text: ${response.statusText}</p>
+            `;
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                resultDiv.innerHTML += `<p>Error: ${errorText}</p>`;
+                return;
+            }
+
+            const result = await response.json();
+            resultDiv.innerHTML += `<pre>${JSON.stringify(result, null, 2)}</pre>`;
+
+        } catch (error) {
+            resultDiv.innerHTML = `<p>Error: ${error.message}</p>`;
+        }
+    }
+    </script>
+</body>
+</html>
